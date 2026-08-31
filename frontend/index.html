@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hermes Finance — Autonomous BCA Expense Intelligence</title>
+    <meta name="description" content="Autonomous zero-touch expense tracker and financial intelligence platform for BCA and myBCA transactions.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand-container">
+                <div class="brand-icon">
+                    <span class="hermes-symbol">⚡</span>
+                </div>
+                <div class="brand-text">
+                    <h2>Hermes <span class="accent-text">Finance</span></h2>
+                    <span class="version-badge">v1.0 · BCA Automated</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" data-tab="transactions">
+                    <span class="nav-icon">💳</span>
+                    <span>Transactions</span>
+                </button>
+                <button class="nav-item" data-tab="email-tester">
+                    <span class="nav-icon">📧</span>
+                    <span>Email Ingestor</span>
+                </button>
+                <button class="nav-item" data-tab="copilot">
+                    <span class="nav-icon">🤖</span>
+                    <span>Hermes Copilot</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="connection-status">
+                    <div class="pulse-dot"></div>
+                    <div class="status-info">
+                        <span class="status-title">BCA Engine Active</span>
+                        <span class="status-subtitle" id="last-sync-time">Live SQLite Sync</span>
+                    </div>
+                </div>
+                <button class="btn-quick-sync" id="btn-sync-trigger">
+                    <span>🔄</span> Run Email Sync
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top App Header -->
+            <header class="top-bar">
+                <div class="header-left">
+                    <h1 id="page-title">Financial Overview</h1>
+                    <p class="subtitle" id="current-period-text">Monitoring BCA & myBCA Transactions · Zero Manual Entry</p>
+                </div>
+                <div class="header-right">
+                    <div class="wallet-badge">
+                        <span class="wallet-icon">🏦</span>
+                        <span class="wallet-label">myBCA Tahapan</span>
+                        <span class="wallet-acc">••••92</span>
+                    </div>
+                    <button class="btn-primary" id="btn-open-email-modal">
+                        <span>📥</span> Ingest BCA Email
+                    </button>
+                </div>
+            </header>
+
+            <!-- TAB 1: DASHBOARD -->
+            <section class="tab-view active" id="view-dashboard">
+                <!-- Stat Cards Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card glass-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Month-to-Date Spend</span>
+                            <span class="stat-icon-wrapper bg-cyan">💰</span>
+                        </div>
+                        <div class="stat-value" id="stat-total-spent">IDR 0</div>
+                        <div class="stat-trend" id="stat-trend-indicator">
+                            <span class="trend-pill trend-neutral" id="trend-pill">⚡ Live Feed</span>
+                            <span class="trend-subtext" id="stat-tx-count">0 transactions</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card glass-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Daily Spending Velocity</span>
+                            <span class="stat-icon-wrapper bg-amber">⚡</span>
+                        </div>
+                        <div class="stat-value" id="stat-daily-velocity">IDR 0</div>
+                        <div class="stat-subtext-detail" id="stat-velocity-sub">Avg spend per day</div>
+                    </div>
+
+                    <div class="stat-card glass-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Top Expense Category</span>
+                            <span class="stat-icon-wrapper bg-purple">🏆</span>
+                        </div>
+                        <div class="stat-value" id="stat-top-category">-</div>
+                        <div class="stat-subtext-detail" id="stat-top-cat-detail">Largest cashflow allocation</div>
+                    </div>
+
+                    <div class="stat-card glass-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Entity Distribution</span>
+                            <span class="stat-icon-wrapper bg-emerald">🏢</span>
+                        </div>
+                        <div class="stat-value" id="stat-entity-summary">Personal & Business</div>
+                        <div class="stat-subtext-detail" id="stat-entity-sub">Miriva / Surejase / Personal</div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <div class="chart-card glass-card span-2">
+                        <div class="card-header-actions">
+                            <div>
+                                <h3>Spending Trend</h3>
+                                <p class="card-desc">Daily cash outflow across all payment methods</p>
+                            </div>
+                            <span class="chart-badge">BCA Real-Time</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card glass-card">
+                        <div class="card-header-actions">
+                            <div>
+                                <h3>Category Breakdown</h3>
+                                <p class="card-desc">Automatic Indonesian merchant classification</p>
+                            </div>
+                        </div>
+                        <div class="chart-container doughnut-box">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions Mini Feed -->
+                <div class="recent-feed-card glass-card">
+                    <div class="card-header-actions">
+                        <div>
+                            <h3>Recent BCA Transactions</h3>
+                            <p class="card-desc">Extracted automatically from myBCA email alerts</p>
+                        </div>
+                        <button class="btn-text-link" id="btn-view-all-txs">View All Transactions →</button>
+                    </div>
+                    <div class="tx-table-container">
+                        <table class="tx-table" id="mini-tx-table">
+                            <thead>
+                                <tr>
+                                    <th>Transaction & Merchant</th>
+                                    <th>Type</th>
+                                    <th>Category</th>
+                                    <th>Entity</th>
+                                    <th>Date</th>
+                                    <th class="text-right">Amount</th>
+                                    <th class="text-center">Receipt</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mini-tx-tbody">
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">Loading transactions...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: TRANSACTIONS EXPLORER -->
+            <section class="tab-view" id="view-transactions">
+                <div class="filter-bar glass-card">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="tx-search-input" placeholder="Search merchant, reference no, or notes...">
+                    </div>
+                    <div class="filter-group">
+                        <select id="filter-category" class="select-dropdown">
+                            <option value="All">All Categories</option>
+                        </select>
+                        <select id="filter-entity" class="select-dropdown">
+                            <option value="All">All Entities</option>
+                            <option value="Personal">Personal</option>
+                            <option value="Miriva">Miriva (B2C)</option>
+                            <option value="Surejase">Surejase (B2B)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="tx-table-card glass-card">
+                    <div class="tx-table-container">
+                        <table class="tx-table" id="full-tx-table">
+                            <thead>
+                                <tr>
+                                    <th>Merchant / Recipient</th>
+                                    <th>Payment Type</th>
+                                    <th>Category</th>
+                                    <th>Entity</th>
+                                    <th>Location</th>
+                                    <th>Date & Time</th>
+                                    <th class="text-right">Total Payment</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="full-tx-tbody">
+                                <tr>
+                                    <td colspan="8" class="text-center py-4">Loading full ledger...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: EMAIL TESTER / INGESTOR -->
+            <section class="tab-view" id="view-email-tester">
+                <div class="email-tester-grid">
+                    <div class="tester-input-card glass-card">
+                        <div class="card-header-actions">
+                            <div>
+                                <h3>BCA Email Ingestor & Simulator</h3>
+                                <p class="card-desc">Paste raw email body from BCA or test sample formats</p>
+                            </div>
+                            <div class="preset-buttons">
+                                <button class="btn-secondary btn-sm" id="btn-load-user-sample">Load Your BCA Email</button>
+                                <button class="btn-secondary btn-sm" id="btn-load-va-sample">Load Shopee VA</button>
+                            </div>
+                        </div>
+
+                        <div class="textarea-wrapper">
+                            <textarea id="raw-email-input" placeholder="Paste your myBCA transaction email here..."></textarea>
+                        </div>
+
+                        <div class="tester-actions">
+                            <button class="btn-primary" id="btn-execute-ingest">
+                                <span>⚡</span> Parse & Log Transaction
+                            </button>
+                            <button class="btn-secondary" id="btn-clear-ingest">Clear</button>
+                        </div>
+                    </div>
+
+                    <div class="tester-result-card glass-card">
+                        <div class="card-header-actions">
+                            <div>
+                                <h3>Real-Time Extraction Output</h3>
+                                <p class="card-desc">Hermes NLP & Indonesian Merchant Classifier</p>
+                            </div>
+                        </div>
+
+                        <div id="extraction-result-container" class="extraction-container empty">
+                            <div class="placeholder-msg">
+                                <span class="placeholder-icon">📨</span>
+                                <p>Paste a BCA email on the left and click "Parse & Log" to see live structured extraction.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: HERMES COPILOT -->
+            <section class="tab-view" id="view-copilot">
+                <div class="copilot-layout glass-card">
+                    <div class="copilot-chat-header">
+                        <div class="copilot-avatar">⚡</div>
+                        <div>
+                            <h3>Hermes Financial Intelligence Agent</h3>
+                            <p class="card-desc">Ask questions in English or Indonesian about your BCA spending & business cashflows</p>
+                        </div>
+                    </div>
+
+                    <div class="copilot-messages" id="copilot-messages-box">
+                        <div class="copilot-msg bot-msg">
+                            <div class="msg-avatar">⚡</div>
+                            <div class="msg-bubble">
+                                <p>Hello Jonathan! I am your <strong>Hermes Financial Copilot</strong>. I have indexed all your BCA & myBCA transactions. How can I help you today?</p>
+                                <div class="suggested-queries">
+                                    <button class="query-chip" data-query="How much did I spend this month?">How much did I spend this month?</button>
+                                    <button class="query-chip" data-query="Show my Food & Dining expenses">Food & Dining breakdown</button>
+                                    <button class="query-chip" data-query="What are my Miriva business expenses?">Miriva business expenses</button>
+                                    <button class="query-chip" data-query="What is my daily burn rate?">Daily burn rate</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="copilot-input-bar">
+                        <input type="text" id="copilot-input" placeholder="Ask Hermes about your transactions, merchants, or burn rate...">
+                        <button class="btn-primary" id="btn-send-copilot">
+                            <span>🚀</span> Ask
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- BCA Receipt Modal Drawer -->
+    <div class="modal-overlay" id="receipt-modal">
+        <div class="modal-card glass-card">
+            <div class="modal-header">
+                <div class="bca-header-title">
+                    <div class="bca-logo-pill">BCA</div>
+                    <h3>myBCA Transaction Receipt</h3>
+                </div>
+                <button class="btn-close-modal" id="btn-close-modal">&times;</button>
+            </div>
+            <div class="receipt-body" id="receipt-modal-content">
+                <!-- Dynamic Content -->
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

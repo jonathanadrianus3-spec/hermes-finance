@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  hermes-bot:
+    build: .
+    container_name: hermes-telegram-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./backend/db:/app/backend/db
+    environment:
+      - TZ=Asia/Jakarta
