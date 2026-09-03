@@ -158,20 +158,60 @@ class Database:
                 """)
             return [dict(r) for r in cursor.fetchall()]
 
-    def mark_as_reviewed(self, tx_id: int, category: str, entity: str = "Personal") -> bool:
+    def update_transaction(self, tx_id: int, updates: Dict[str, Any]) -> bool:
         """
-        Marks transaction as reviewed and updates category and entity tag.
+        Updates fields of a transaction (e.g. merchant_name, amount, category, entity, notes).
         """
+        allowed = {"merchant_name", "merchant_clean_name", "amount", "category", "entity", "notes", "is_reviewed", "reviewed_at"}
+        valid_updates = {k: v for k, v in updates.items() if k in allowed and v is not None}
+        if "merchant_name" in valid_updates and "merchant_clean_name" not in valid_updates:
+            valid_updates["merchant_clean_name"] = valid_updates["merchant_name"]
+        if not valid_updates:
+            return False
+        set_clause = ", ".join([f"{k} = ?" for k in valid_updates.keys()])
+        values = list(valid_updates.values()) + [tx_id]
         with self.get_connection() as conn:
             cursor = conn.cursor()
-            now_iso = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            cursor.execute("""
-                UPDATE transactions
-                SET is_reviewed = 1, reviewed_at = ?, category = ?, entity = ?
-                WHERE id = ?
-            """, (now_iso, category, entity, tx_id))
+            cursor.execute(f"UPDATE transactions SET {set_clause} WHERE id = ?", values)
             conn.commit()
             return cursor.rowcount > 0
+
+    def mark_as_reviewed(
+        self,
+        tx_id: int,
+        category: str,
+        entity: str = "Personal",
+        notes: Optional[str] = None,
+        merchant_name: Optional[str] = None,
+        amount: Optional[float] = None
+    ) -> bool:
+        """
+        Marks transaction as reviewed and updates category, entity tag, optional notes,
+        and optionally corrected merchant name and split/adjusted amount.
+        """
+        now_iso = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        updates: Dict[str, Any] = {
+            "is_reviewed": 1,
+            "reviewed_at": now_iso,
+            "category": category,
+            "entity": entity,
+        }
+        if notes is not None:
+            updates["notes"] = notes
+        if merchant_name:
+            clean = merchant_name.strip()
+            updates["merchant_name"] = clean
+            updates["merchant_clean_name"] = clean
+        if amount is not None and amount > 0:
+            updates["amount"] = float(amount)
+
+        return self.update_transaction(tx_id, updates)
+
+    def get_pending_review_count(self) -> int:
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT COUNT(*) FROM transactions WHERE is_reviewed = 0")
+            return cursor.fetchone()[0]
 
     def get_daily_summary(self, date_str: Optional[str] = None) -> Dict[str, Any]:
         """

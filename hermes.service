@@ -1,12 +1,12 @@
 [Unit]
-Description=Hermes Finance Telegram Bot & BCA Review Daemon
+Description=Hermes Finance API & BCA Email Sync Service
 After=network.target
 
 [Service]
 Type=simple
 User=root
 WorkingDirectory=/root/Hermes
-ExecStart=/usr/bin/python3 /root/Hermes/main_bot.py
+ExecStart=/usr/bin/python3 /root/Hermes/run.py
 Restart=always
 RestartSec=10
 EnvironmentFile=/root/Hermes/.env

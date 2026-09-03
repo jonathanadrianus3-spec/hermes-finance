@@ -20,9 +20,9 @@ class EmailListener:
         self.db = db
         self.host = os.getenv("EMAIL_HOST", "imap.gmail.com")
         self.port = int(os.getenv("EMAIL_PORT", "993"))
-        self.user = os.getenv("EMAIL_USER", "")
-        self.password = os.getenv("EMAIL_PASSWORD", "")
-        self.folder = os.getenv("EMAIL_FOLDER", "INBOX")
+        self.user = os.getenv("EMAIL_USER", "").strip()
+        self.password = os.getenv("EMAIL_PASSWORD", "").replace(" ", "").strip()
+        self.folder = os.getenv("EMAIL_FOLDER", "INBOX").strip()
 
     def process_raw_email(self, raw_content: str, sender: str = "", subject: str = "") -> Optional[Dict[str, Any]]:
         """
@@ -71,11 +71,10 @@ class EmailListener:
             mail.login(self.user, self.password)
             mail.select(self.folder)
 
-            # Search for BCA related emails
-            # Try searching for emails from BCA or containing BCA in subject
-            status, messages = mail.search(None, '(OR FROM "bca" SUBJECT "myBCA")')
-            if status != "OK" or not messages[0]:
-                status, messages = mail.search(None, '(OR SUBJECT "Transaksi" SUBJECT "BCA")')
+            # Search for BCA and forwarded BCA transaction emails
+            status, messages = mail.search(None, '(OR FROM "bca" (OR SUBJECT "Transaction" (OR SUBJECT "Journal" (OR SUBJECT "Withdrawal" (OR SUBJECT "BCA" SUBJECT "myBCA")))))')
+            if status != "OK" or not messages or not messages[0]:
+                status, messages = mail.search(None, 'ALL')
 
             email_ids = messages[0].split() if messages and messages[0] else []
             # Take latest N emails

@@ -255,13 +255,16 @@ class BCAParser:
             r'Description\s*[:]\s*([^\n]+)'
         )
 
+        # Default merchant to Transfer for unstated recipients or transfers
+        default_merchant = "Transfer" if not payment_to or payment_to.strip().lower() == "unknown merchant" else payment_to
+
         return {
             "reference_no": reference_no,
             "rrn": rrn,
             "status": status,
             "transaction_date": tx_date,
             "transaction_type": tx_type,
-            "merchant_name": payment_to or "Unknown Merchant",
+            "merchant_name": default_merchant,
             "merchant_location": merchant_location,
             "source_of_fund": source_of_fund or "myBCA",
             "amount": amount,
