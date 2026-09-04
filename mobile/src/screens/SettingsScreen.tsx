@@ -113,9 +113,9 @@ export const SettingsScreen: React.FC = () => {
 
   const handleSeedData = async () => {
     setSeeding(true);
-    const res = await HermesApi.seedSampleData();
+    const res = await HermesApi.purgeMockData();
     setSeeding(false);
-    Alert.alert('Success', res.message || 'Realistic sample data loaded!');
+    Alert.alert('Database Cleaned', res.message || 'Mock transactions purged. Only genuine BCA transactions remain.');
   };
 
   return (
@@ -281,11 +281,11 @@ export const SettingsScreen: React.FC = () => {
                 onPress={handleSeedData}
                 disabled={seeding}
               >
-                <Text style={styles.actionText}>Reset / Seed Demo BCA Transactions</Text>
+                <Text style={styles.actionText}>Purge Mock Data (Keep Real BCA Only)</Text>
                 {seeding ? (
                   <ActivityIndicator size="small" color={THEME.colors.primary} />
                 ) : (
-                  <Ionicons name="cube-outline" size={16} color={THEME.colors.primary} />
+                  <Ionicons name="trash-outline" size={16} color={THEME.colors.primary} />
                 )}
               </TouchableOpacity>
             </View>

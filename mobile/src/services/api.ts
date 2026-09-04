@@ -5,143 +5,146 @@ const SERVER_URL_KEY = '@hermes_server_url';
 export const DEFAULT_SERVER_URL = 'http://51.79.167.75:8000';
 
 // Built-in fallback data for instant offline testing and reliability
+// Built-in fallback data populated with real BCA transactions
 export const FALLBACK_DASHBOARD: DashboardData = {
   summary: {
     month: '2026-09',
-    total_spent: 651500,
-    tx_count: 4,
-    avg_tx: 162875,
-    daily_velocity: 217166,
-    prev_month_total: 2954820,
-    mom_change_pct: -77.9,
-    top_category: 'Professional & Work',
+    total_spent: 1357200,
+    tx_count: 2,
+    avg_tx: 678600,
+    daily_velocity: 452400,
+    prev_month_total: 904920,
+    mom_change_pct: 50.0,
+    top_category: 'Community & Donations',
     category_breakdown: [
-      { category: 'Professional & Work', total_amount: 320000, count: 1 },
-      { category: 'Groceries & Household', total_amount: 215000, count: 1 },
-      { category: 'Food & Dining', total_amount: 116500, count: 2 },
+      { category: 'Community & Donations', total_amount: 1300000, count: 1 },
+      { category: 'Food & Dining', total_amount: 57200, count: 1 },
     ],
     entity_breakdown: [
-      { entity: 'Personal', total_amount: 116500, count: 2 },
-      { entity: 'Family', total_amount: 215000, count: 1 },
-      { entity: 'Community', total_amount: 0, count: 0 },
-      { entity: 'Professional', total_amount: 320000, count: 1 },
+      { entity: 'Personal', total_amount: 57200, count: 1 },
+      { entity: 'Family', total_amount: 0, count: 0 },
+      { entity: 'Community', total_amount: 1300000, count: 1 },
+      { entity: 'Professional', total_amount: 0, count: 0 },
     ],
     payment_type_breakdown: [
-      { transaction_type: 'QRIS Payment', total_amount: 331500, count: 3 },
-      { transaction_type: 'Pembayaran BCA Virtual Account', total_amount: 320000, count: 1 },
+      { transaction_type: 'Transfer', total_amount: 1300000, count: 1 },
+      { transaction_type: 'QRIS Payment', total_amount: 57200, count: 1 },
     ],
     daily_trends: [
-      { day: '2026-09-01', daily_total: 320000 },
-      { day: '2026-09-02', daily_total: 215000 },
-      { day: '2026-09-03', daily_total: 116500 },
+      { day: '2026-09-01', daily_total: 57200 },
+      { day: '2026-09-02', daily_total: 1300000 },
     ],
   },
-  pending_review_count: 2,
+  pending_review_count: 9,
   pending_reviews: [
     {
-      id: 101,
-      reference_no: '9527120260903124500QRS01',
-      rrn: '287991823',
-      transaction_date: '03 Sep 2026 12:45:00',
-      amount: 32000,
+      id: 27,
+      reference_no: 'BCA-GEN-MAWAR-SHARON',
+      transaction_date: '02 Sep 2026 14:10:00',
+      amount: 1300000,
+      currency: 'IDR',
+      transaction_type: 'Bank Transfer',
+      merchant_name: 'YAY MAWAR SHARON PEDULI',
+      merchant_clean_name: 'YAY MAWAR SHARON PEDULI',
+      source_of_fund: 'myBCA',
+      category: 'Community & Donations',
+      entity: 'Community',
+      status: 'Successful',
+      is_reviewed: 0,
+      notes: '',
+    },
+    {
+      id: 19,
+      reference_no: '9527120260901184311720QRS1090099784',
+      transaction_date: '01 Sep 2026 18:43:15',
+      amount: 57200,
       currency: 'IDR',
       transaction_type: 'QRIS Payment',
-      merchant_name: 'KOPI KENANGAN QBIG',
-      merchant_clean_name: 'KOPI KENANGAN QBIG',
-      merchant_location: 'TANGERANG, ID',
-      source_of_fund: 'TAHAPAN - 6720****92',
+      merchant_name: 'BEON3',
+      merchant_clean_name: 'BEON3',
+      source_of_fund: 'myBCA',
       category: 'Food & Dining',
-      subcategory: 'Cafe & Coffee',
       entity: 'Personal',
       status: 'Successful',
       is_reviewed: 0,
       notes: '',
-      raw_text: 'Hello JONATHAN ADRIANUS GANI,\nYou just made a transaction through myBCA.\nAmount: IDR 32,000.00',
-    },
-    {
-      id: 102,
-      reference_no: '9527120260903131500QRS02',
-      rrn: '287991824',
-      transaction_date: '03 Sep 2026 13:15:00',
-      amount: 84500,
-      currency: 'IDR',
-      transaction_type: 'QRIS Payment',
-      merchant_name: 'BAKMI GM LIVING WORLD',
-      merchant_clean_name: 'BAKMI GM LIVING WORLD',
-      merchant_location: 'TANGERANG SELATAN, ID',
-      source_of_fund: 'TAHAPAN - 6720****92',
-      category: 'Food & Dining',
-      subcategory: 'Restaurant',
-      entity: 'Personal',
-      status: 'Successful',
-      is_reviewed: 0,
-      notes: 'Makan Siang Bareng Rekan',
     },
   ],
   recent_transactions: [
     {
-      id: 101,
-      reference_no: '9527120260903124500QRS01',
-      rrn: '287991823',
-      transaction_date: '03 Sep 2026 12:45:00',
-      amount: 32000,
+      id: 27,
+      reference_no: 'BCA-GEN-MAWAR-SHARON',
+      transaction_date: '02 Sep 2026 14:10:00',
+      amount: 1300000,
+      currency: 'IDR',
+      transaction_type: 'Bank Transfer',
+      merchant_name: 'YAY MAWAR SHARON PEDULI',
+      merchant_clean_name: 'YAY MAWAR SHARON PEDULI',
+      source_of_fund: 'myBCA',
+      category: 'Community & Donations',
+      entity: 'Community',
+      status: 'Successful',
+      is_reviewed: 0,
+    },
+    {
+      id: 19,
+      reference_no: '9527120260901184311720QRS1090099784',
+      transaction_date: '01 Sep 2026 18:43:15',
+      amount: 57200,
       currency: 'IDR',
       transaction_type: 'QRIS Payment',
-      merchant_name: 'KOPI KENANGAN QBIG',
-      merchant_clean_name: 'KOPI KENANGAN QBIG',
-      merchant_location: 'TANGERANG, ID',
-      source_of_fund: 'TAHAPAN - 6720****92',
+      merchant_name: 'BEON3',
+      merchant_clean_name: 'BEON3',
+      source_of_fund: 'myBCA',
       category: 'Food & Dining',
       entity: 'Personal',
       status: 'Successful',
       is_reviewed: 0,
     },
     {
-      id: 102,
-      reference_no: '9527120260903131500QRS02',
-      transaction_date: '03 Sep 2026 13:15:00',
-      amount: 84500,
+      id: 26,
+      reference_no: '53AE8BE8-D245-4FF4-B91C-D8D44BA30569',
+      transaction_date: '31 Aug 2026 08:21:35',
+      amount: 100000,
+      currency: 'IDR',
+      transaction_type: 'Bank Transfer',
+      merchant_name: 'Transfer',
+      merchant_clean_name: 'Transfer',
+      source_of_fund: 'myBCA',
+      category: 'General / Others',
+      entity: 'Personal',
+      status: 'Successful',
+      is_reviewed: 0,
+    },
+    {
+      id: 25,
+      reference_no: '9527120260830182424533QRS1079342240',
+      transaction_date: '30 Aug 2026 18:24:28',
+      amount: 45320,
       currency: 'IDR',
       transaction_type: 'QRIS Payment',
-      merchant_name: 'BAKMI GM LIVING WORLD',
-      merchant_clean_name: 'BAKMI GM LIVING WORLD',
-      merchant_location: 'TANGERANG SELATAN, ID',
-      source_of_fund: 'TAHAPAN - 6720****92',
+      merchant_name: 'ESB Restaurant Tech D',
+      merchant_clean_name: 'ESB Restaurant Tech D',
+      source_of_fund: 'myBCA',
       category: 'Food & Dining',
       entity: 'Personal',
       status: 'Successful',
       is_reviewed: 0,
     },
     {
-      id: 103,
-      reference_no: '9527120260902183010QRS03',
-      transaction_date: '02 Sep 2026 18:30:10',
-      amount: 215000,
+      id: 24,
+      reference_no: '9527120260829203939023QRS1074766674',
+      transaction_date: '29 Aug 2026 20:39:43',
+      amount: 38000,
       currency: 'IDR',
       transaction_type: 'QRIS Payment',
-      merchant_name: 'SUPERINDO FRESH BINTARO',
-      merchant_clean_name: 'SUPERINDO FRESH BINTARO',
-      merchant_location: 'TANGERANG SELATAN, ID',
-      source_of_fund: 'TAHAPAN - 6720****92',
-      category: 'Groceries & Household',
-      entity: 'Family',
+      merchant_name: 'KWETIAU AHO - PMS',
+      merchant_clean_name: 'KWETIAU AHO - PMS',
+      source_of_fund: 'myBCA',
+      category: 'Food & Dining',
+      entity: 'Personal',
       status: 'Successful',
-      is_reviewed: 1,
-    },
-    {
-      id: 104,
-      reference_no: '9527120260901091522VA04',
-      transaction_date: '01 Sep 2026 09:15:22',
-      amount: 320000,
-      currency: 'IDR',
-      transaction_type: 'Pembayaran BCA Virtual Account',
-      merchant_name: 'ANTHROPIC CLAUDE API',
-      merchant_clean_name: 'ANTHROPIC CLAUDE API',
-      source_of_fund: 'TAHAPAN - 6720****92',
-      category: 'Professional & Work',
-      entity: 'Professional',
-      status: 'Successful',
-      is_reviewed: 1,
+      is_reviewed: 0,
     },
   ],
 };
@@ -149,7 +152,12 @@ export const FALLBACK_DASHBOARD: DashboardData = {
 export class HermesApi {
   static async getServerUrl(): Promise<string> {
     const saved = await AsyncStorage.getItem(SERVER_URL_KEY);
-    return saved || DEFAULT_SERVER_URL;
+    // If empty or still pointing to old local laptop IP, point to VPS automatically
+    if (!saved || saved.includes('192.168.')) {
+      await AsyncStorage.setItem(SERVER_URL_KEY, DEFAULT_SERVER_URL);
+      return DEFAULT_SERVER_URL;
+    }
+    return saved;
   }
 
   static async setServerUrl(url: string): Promise<void> {
@@ -318,18 +326,23 @@ export class HermesApi {
     };
   }
 
-  static async seedSampleData(): Promise<{ success: boolean; message: string }> {
+  static async purgeMockData(): Promise<{ success: boolean; message: string; remaining?: number }> {
     try {
       const baseUrl = await this.getServerUrl();
-      const res = await this.fetchWithTimeout(`${baseUrl}/api/seed`, {
+      const res = await this.fetchWithTimeout(`${baseUrl}/api/purge-mock-data`, {
         method: 'POST',
       });
       if (res.ok) {
         return await res.json();
       }
     } catch (e) {
-      console.log('Seed sample data offline fallback:', e);
+      console.log('Purge mock data error:', e);
     }
-    return { success: true, message: 'Demo data refreshed!' };
+    return { success: false, message: 'Could not connect to server to purge mock data.' };
+  }
+
+  static async seedSampleData(): Promise<{ success: boolean; message: string }> {
+    return await this.purgeMockData();
   }
 }
+

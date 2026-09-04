@@ -361,173 +361,56 @@ def copilot_query(req: CopilotQueryRequest):
         "answer": f"Hermes Financial Summary for {summary['month']}:\n- Total Spent: **IDR {total_spent:,.2f}**\n- Transactions: **{tx_count}**\n- Primary Category: **{top_cat}**\n- Average Burn Rate: **IDR {daily_velocity:,.2f}/day**\n\nYou can ask me specific questions like: *'How much did I spend on Food?'*, *'What are my Family expenses?'*, or *'Show top categories'*"
     }
 
+@app.post("/api/purge-mock-data")
+def purge_mock_data():
+    """
+    Purges all fictitious mock/demo transactions from the database,
+    keeping only 100% genuine BCA transactions synced from Gmail.
+    """
+    with db.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            DELETE FROM transactions 
+            WHERE merchant_name IN (
+                'KOPI KENANGAN QBIG', 'BAKMI GM LIVING WORLD', 'SUPERINDO FRESH BINTARO', 
+                'ANTHROPIC CLAUDE API', 'ALFAMART FORESTIS', 'SPBU PERTAMINA 34-15311', 
+                'GITHUB COPILOT WORKSPACE', 'YAYASAN KITABISA INDONESIA', 'PLN POSTPAID',
+                'SHOPEE INDONESIA', 'PT LOGISTIK INDUSTRI UTAMA'
+            ) 
+            OR reference_no LIKE '%QRS01' 
+            OR reference_no LIKE '%QRS02' 
+            OR reference_no LIKE '%QRS03' 
+            OR reference_no LIKE '%VA04'
+            OR reference_no LIKE '%QRS99812401' 
+            OR reference_no LIKE '%QRS77123901' 
+            OR reference_no LIKE '%QRS33901234' 
+            OR reference_no LIKE '%VA44019231' 
+            OR reference_no LIKE '%TF88102931' 
+            OR reference_no LIKE '%VA11204921';
+        """)
+        deleted = cursor.rowcount
+        conn.commit()
+        remaining = cursor.execute("SELECT COUNT(*) FROM transactions").fetchone()[0]
+
+    return {
+        "success": True,
+        "deleted": deleted,
+        "remaining": remaining,
+        "message": f"Purged {deleted} fictitious transactions. {remaining} genuine transactions remain."
+    }
+
 @app.post("/api/seed")
 def seed_sample_data():
     """
-    Seeds initial realistic transactions including the user's exact BCA QRIS email
-    and samples covering Personal, Family, Community, and Professional entities.
+    Replaces mock data seeding with a clean purge and genuine Gmail sync.
+    Fictitious mock transactions are never inserted.
     """
-    sample_user_email = """
-Hello JONATHAN ADRIANUS GANI,
-You just made a transaction through myBCA.
-Here are the details of your transaction :
-
-Status : Successful
-Transaction Date : 30 Aug 2026 18:24:28
-Transaction Type : QRIS Payment
-Payment to : ESB Restaurant Tech D
-Merchant Location : TANGERANG, 15810, ID
-Acquirer : BCA
-Merchant PAN : 9360001430026573904
-Terminal ID : A0000001
-Source of Fund : TAHAPAN - 6720****92
-Customer PAN : 9360001410092502649
-Total Payment : IDR 45,320.00
-RRN : 287921937
-Reference No. : 9527120260830182424533QRS1079342240
-Please save this email as your transaction reference.
-If you do not recognize this transaction, immediately contact Halo BCA at 1500888.
-
-Best Regards,
-PT Bank Central Asia Tbk
-"""
-
-    other_samples = [
-        """
-Hello JONATHAN ADRIANUS GANI,
-You just made a transaction through myBCA.
-Status : Successful
-Transaction Date : 29 Aug 2026 14:10:15
-Transaction Type : QRIS Payment
-Payment to : KOPI KENANGAN QBIG
-Merchant Location : TANGERANG, ID
-Source of Fund : TAHAPAN - 6720****92
-Total Payment : IDR 28,000.00
-Reference No. : 9527120260829141015QRS99812401
-""",
-        """
-Hello JONATHAN ADRIANUS GANI,
-Status : Successful
-Transaction Date : 28 Aug 2026 11:45:00
-Transaction Type : QRIS Payment
-Payment to : ALFAMART FORESTIS
-Merchant Location : TANGERANG, ID
-Source of Fund : TAHAPAN - 6720****92
-Total Payment : IDR 176,500.00
-Reference No. : 9527120260828114500QRS77123901
-Berita : Bulanan Rumah Tangga dan Susu
-""",
-        """
-Hello JONATHAN ADRIANUS GANI,
-Status : Successful
-Transaction Date : 27 Aug 2026 09:20:00
-Transaction Type : QRIS Payment
-Payment to : SPBU PERTAMINA 34-15311
-Merchant Location : TANGERANG SELATAN, ID
-Source of Fund : TAHAPAN - 6720****92
-Total Payment : IDR 150,000.00
-Reference No. : 9527120260827092000QRS33901234
-""",
-        """
-Hello JONATHAN ADRIANUS GANI,
-Status : Successful
-Transaction Date : 25 Aug 2026 15:30:12
-Transaction Type : Pembayaran BCA Virtual Account
-Payment to : GITHUB COPILOT WORKSPACE
-Source of Fund : TAHAPAN - 6720****92
-Total Payment : IDR 310,000.00
-Reference No. : 9527120260825153012VA44019231
-Berita : Professional Developer Tool Subscription
-""",
-        """
-Hello JONATHAN ADRIANUS GANI,
-Status : Successful
-Transaction Date : 22 Aug 2026 13:00:00
-Transaction Type : Transfer Antar Bank
-Payment to : YAYASAN KITABISA INDONESIA
-Source of Fund : TAHAPAN - 6720****92
-Total Payment : IDR 250,000.00
-Reference No. : 9527120260822130000TF88102931
-Berita : Donasi Bantuan Komunitas & Anak Asuh
-""",
-        """
-Hello JONATHAN ADRIANUS GANI,
-Status : Successful
-Transaction Date : 20 Aug 2026 20:15:33
-Transaction Type : Pembayaran BCA Virtual Account
-Payment to : PLN POSTPAID
-Source of Fund : TAHAPAN - 6720****92
-Total Payment : IDR 485,000.00
-Reference No. : 9527120260820201533VA11204921
-Berita : Tagihan Listrik Rumah Tangga
-"""
-    ]
-
-    # Ingest user's actual email
-    email_listener.process_raw_email(sample_user_email)
-
-    for s in other_samples:
-        email_listener.process_raw_email(s)
-
-    # Add dynamic transactions for current month / today so dashboard is immediately rich
-    now = datetime.now()
-    d_today = now.strftime("%d %b %Y 12:45:00")
-    d_yest = (now - timedelta(days=1)).strftime("%d %b %Y 18:30:10")
-    d_prev = (now - timedelta(days=2)).strftime("%d %b %Y 09:15:22")
-
-    current_samples = [
-        f"""
-Hello JONATHAN ADRIANUS GANI,
-Status : Successful
-Transaction Date : {d_today}
-Transaction Type : QRIS Payment
-Payment to : KOPI KENANGAN QBIG
-Merchant Location : TANGERANG, ID
-Source of Fund : TAHAPAN - 6720****92
-Total Payment : IDR 32,000.00
-Reference No. : 95271{now.strftime('%Y%m%d')}124500QRS01
-""",
-        f"""
-Hello JONATHAN ADRIANUS GANI,
-Status : Successful
-Transaction Date : {d_today}
-Transaction Type : QRIS Payment
-Payment to : BAKMI GM LIVING WORLD
-Merchant Location : TANGERANG SELATAN, ID
-Source of Fund : TAHAPAN - 6720****92
-Total Payment : IDR 84,500.00
-Reference No. : 95271{now.strftime('%Y%m%d')}131500QRS02
-Berita : Makan Siang Bareng Rekan
-""",
-        f"""
-Hello JONATHAN ADRIANUS GANI,
-Status : Successful
-Transaction Date : {d_yest}
-Transaction Type : QRIS Payment
-Payment to : SUPERINDO FRESH BINTARO
-Merchant Location : TANGERANG SELATAN, ID
-Source of Fund : TAHAPAN - 6720****92
-Total Payment : IDR 215,000.00
-Reference No. : 95271{now.strftime('%Y%m%d')}183010QRS03
-Berita : Belanja Sayur & Buah Keluarga
-""",
-        f"""
-Hello JONATHAN ADRIANUS GANI,
-Status : Successful
-Transaction Date : {d_prev}
-Transaction Type : Pembayaran BCA Virtual Account
-Payment to : ANTHROPIC CLAUDE API
-Source of Fund : TAHAPAN - 6720****92
-Total Payment : IDR 320,000.00
-Reference No. : 95271{now.strftime('%Y%m%d')}091522VA04
-Berita : Subscription AI Assistant Work
-"""
-    ]
-
-    for s in current_samples:
-        email_listener.process_raw_email(s)
-
-    return {"success": True, "message": "Sample transactions seeded successfully"}
+    purge_mock_data()
+    sync_res = email_listener.fetch_unseen_bca_emails(limit=50)
+    return {
+        "success": True,
+        "message": f"Mock data removed. Synced {sync_res.get('imported', 0)} genuine BCA transactions from Gmail."
+    }
 
 # Serve Frontend static assets
 FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")

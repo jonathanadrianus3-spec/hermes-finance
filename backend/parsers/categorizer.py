@@ -33,7 +33,7 @@ class IndonesianCategorizer:
         (r'\b(pt\s+|cv\s+|logistik|freight|b2b|invoice|vendor|supplier|distributor|kantor|office|printing|percetakan)\b', "Professional & Work", "Business & Operations", "Professional"),
 
         # Community / Donations / Giving / Church / Mosque / Social
-        (r'\b(kitabisa|donasi|zakat|infaq|sedekah|gereja|church|masjid|persepuluhan|tithe|yayasan|charity|komunitas|community|iuran\s*rt|iuran\s*rw|arisan)\b', "Community & Giving", "Donation & Dues", "Community"),
+        (r'\b(kitabisa|donasi|zakat|infaq|sedekah|gereja|church|masjid|persepuluhan|tithe|yayasan|yay|mawar\s*sharon|peduli|gms|charity|komunitas|community|iuran\s*rt|iuran\s*rw|arisan)\b', "Community & Giving", "Donation & Dues", "Community"),
 
         # Family / Household / Kids / School / Parents
         (r'\b(sekolah|school|kursus|les|tuition|spp|universitas|kampus|bimbel|kumon|baby|diaper|susu\s*anak|toys|mainan|ayah|ibu|mama|papa|keluarga|family|household)\b', "Family & Education", "Family & Education", "Family"),

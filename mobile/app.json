@@ -16,6 +16,7 @@
     },
     "android": {
       "package": "com.hermes.finance",
+      "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "backgroundColor": "#0a0f1d",
         "foregroundImage": "./assets/android-icon-foreground.png"
@@ -26,6 +27,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "720f9b0d-c63e-4112-99e5-84ea9be15564"
+      }
     }
   }
 }
